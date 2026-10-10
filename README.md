@@ -10,6 +10,14 @@ answers on, not just the two calls in the getting-started guide.
 
 ## Installation
 
+Two guides ship with this package:
+
+- [`docs/INSTALL-OPTIONS.md`](docs/INSTALL-OPTIONS.md): every way to get the node into a workflow -
+  by name from npm, from this tarball by hand (works before publishing), managed by environment
+  variables across many instances, or as a live dev preview.
+- [`docs/PUBLISHING.md`](docs/PUBLISHING.md): the npm publishing runbook, including the token and
+  two-factor settings, version discipline, and what n8n requires for verification.
+
 ### From n8n's Community Nodes UI (self-hosted)
 
 1. Open **Settings > Community Nodes > Install a community node**.

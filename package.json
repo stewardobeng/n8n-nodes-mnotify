@@ -31,10 +31,11 @@
 		"lint": "n8n-node lint",
 		"lint:fix": "n8n-node lint --fix",
 		"test": "node --test test/*.test.mjs",
-		"prepublishOnly": "n8n-node prerelease"
+		"prepublishOnly": "npm run build && npm run lint && npm test"
 	},
 	"files": [
-		"dist"
+		"dist",
+		"!dist/tsconfig.tsbuildinfo"
 	],
 	"n8n": {
 		"n8nNodesApiVersion": 1,
