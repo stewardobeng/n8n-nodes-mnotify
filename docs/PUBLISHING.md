@@ -75,10 +75,11 @@ GitHub is not involved in publishing, and a suspended GitHub account does not bl
 
 GitHub matters for two optional things:
 
-1. **The `repository` link on the npm page.** `package.json` currently points at
-   `github.com/steprotech/n8n-nodes-mnotify`. That is only a hyperlink; it does not have to resolve.
-   Point it at wherever the code actually lives (your GitLab, say) or drop the field until the repo
-   exists.
+1. **The `repository` link on the npm page.** It points at the private GitLab project
+   `gitlab.com/steprotech/n8n-nodes-mnotify`, which is where the code lives (GitHub is suspended).
+   Because that project is private, visitors clicking the link on the npm page get a sign-in wall or a
+   404. That is expected: the field is a pointer for people who have access, not a public mirror. Make
+   the project public if you ever want the link to resolve for everyone.
 2. **Verification through n8n's Creator Portal**, which since 1 May 2026 requires a package to be
    published from **GitHub Actions** with a provenance statement. That specific track needs GitHub
    back.
