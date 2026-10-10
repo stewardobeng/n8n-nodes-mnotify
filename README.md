@@ -34,9 +34,14 @@ In Docker, the n8n user folder is `/home/node/.n8n`, so the same commands run as
 
 ```bash
 docker cp n8n-nodes-mnotify-0.1.0.tgz n8n:/tmp/
-docker exec n8n sh -c "mkdir -p /home/node/.n8n/nodes && cd /home/node/.n8n/nodes && npm install /tmp/n8n-nodes-mnotify-0.1.0.tgz --no-audit --no-fund"
+docker exec n8n sh -c "mkdir -p /home/node/.n8n/nodes && cd /home/node/.n8n/nodes && npm install --legacy-peer-deps --no-audit --no-fund /tmp/n8n-nodes-mnotify-0.1.0.tgz"
 docker restart n8n
 ```
+
+Like every published community node, this package declares `n8n-workflow` as a peer dependency,
+which n8n supplies at runtime. A plain `npm install` may try to fetch it from the registry and
+fail building its native optional dependency; `--legacy-peer-deps` skips that fetch. The
+Community Nodes UI install does not need the flag.
 
 ## Credentials
 
@@ -151,6 +156,12 @@ node test/tools/probe-endpoints.mjs                                  # re-probe 
   that fakes only n8n's own plumbing, and covers balances, sender ID status, groups, templates,
   contacts, IVR scenarios, scheduled messages, a periodic report and the wrong-key error message.
   It performs no writes: nothing is sent, created or charged.
+- `test/manual/docker-load-verify.sh` is the end-to-end check: it builds and packs the package,
+  starts a throwaway n8n in Docker, installs the tarball the way a self-hosted user does, asserts
+  that n8n registered `n8n-nodes-mnotify.mNotify` (plus the tool and trigger variants), imports a
+  credential and two workflows, then executes them and prints the real payloads. Run it with
+  `MN_API_KEY=... bash test/manual/docker-load-verify.sh`. The key is substituted inside the
+  container and never touches this repository.
 
 ## Development
 

@@ -1,0 +1,50 @@
+{
+	"id": "mnVerifyWf000002",
+	"name": "mNotify verification: read 5 contacts",
+	"nodes": [
+		{
+			"parameters": {},
+			"id": "33333333-3333-4333-8333-333333333333",
+			"name": "When Executed by Another Workflow",
+			"type": "n8n-nodes-base.executeWorkflowTrigger",
+			"typeVersion": 1,
+			"position": [0, 300]
+		},
+		{
+			"parameters": {
+				"resource": "contact",
+				"operation": "getAll",
+				"contactReturnAll": false,
+				"contactLimit": 5
+			},
+			"id": "44444444-4444-4444-8444-444444444444",
+			"name": "mNotify",
+			"type": "n8n-nodes-mnotify.mNotify",
+			"typeVersion": 1,
+			"position": [260, 300],
+			"credentials": {
+				"mNotifyApi": {
+					"id": "mnverify00000001",
+					"name": "mNotify (verification)"
+				}
+			}
+		}
+	],
+	"connections": {
+		"When Executed by Another Workflow": {
+			"main": [
+				[
+					{
+						"node": "mNotify",
+						"type": "main",
+						"index": 0
+					}
+				]
+			]
+		}
+	},
+	"settings": {
+		"executionOrder": "v1"
+	},
+	"pinData": {}
+}
