@@ -13,16 +13,16 @@
       "npm run test",
       "npm run lint"
     ],
-    "start": "npm run dev",
-    "port": 5678,
+    "start": "bash test/manual/docker-load-verify.sh",
+    "port": 5688,
     "readinessPath": "/healthz/readiness",
     "evidence": [
       "Detected package.json",
       "Package manager: npm",
       "Scripts: build, build:watch, dev, lint, lint:fix, test, prepublishOnly",
-      "The start command is the official dev preview (n8n-node dev): it boots a real n8n with this package linked on port 5678, readiness at /healthz/readiness.",
-      "That preview installs a second complete n8n under ~/.n8n-node-cli, so on a small host run the runtime boot as: MN_API_KEY=... bash test/manual/docker-load-verify.sh (a throwaway n8n in Docker, port 5688, same readiness path), or record build+test with: hermes verify --json --skip-start.",
-      "Live API checks live in test/live-api.test.mjs and need MN_API_KEY."
+      "Start phase boots a real n8n in Docker with this package installed, executes two workflows against the live mNotify API, and serves readiness at /healthz/readiness on port 5688. It needs docker and MN_API_KEY in the environment; without the key it exits with a clear message.",
+      "n8n-node dev (npm run dev, port 5678) is the editing path only: it installs a second full n8n (about 2 GB), too heavy for a small host. Use it when changing the node source.",
+      "For build and test only, run: hermes verify --json --skip-start"
     ]
   },
   "updatedAt": "2026-10-10T03:06:57.060465+00:00"
