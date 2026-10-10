@@ -40,7 +40,8 @@ wait_for_n8n() {
 		fi
 		sleep 3
 	done
-	echo "    n8n did not become ready" >&2
+	echo "    n8n did not become ready; last container log lines:" >&2
+	docker logs "$NAME" 2>&1 | tail -5 >&2
 	return 1
 }
 
@@ -53,9 +54,14 @@ echo "    $TARBALL"
 echo "== 2. fresh n8n instance"
 docker rm -f "$NAME" >/dev/null 2>&1 || true
 mkdir -p "$VOL"
-# The container runs as uid 1000, which is not this shell's uid, so it clears its own volume.
+# The container runs as uid 1000, which is not necessarily this shell's uid, so the mount point
+# itself has to be writable by it: n8n writes its settings file and encryption key there and
+# dies with EACCES on /home/node/.n8n/config otherwise. Throwaway test volume, hence 777.
+chmod 777 "$VOL"
+# Contents inside the volume are owned by the container's uid, so it clears them itself; a host
+# rm would fail with permission denied on the installed package's files.
 docker run --rm -v "${VOL}:/home/node/.n8n" --entrypoint sh "$IMAGE" -lc \
-	'rm -rf /home/node/.n8n/* /home/node/.n8n/.[!.]* 2>/dev/null; mkdir -p /home/node/.n8n' || true
+	'rm -rf /home/node/.n8n/* /home/node/.n8n/.[!.]* 2>/dev/null'
 docker run -d --name "$NAME" --memory=1200m --memory-swap=1200m "${N8N_ENV[@]}" \
 	-e N8N_SECURE_COOKIE=false -e N8N_LOG_LEVEL=info \
 	-p "127.0.0.1:${PORT}:5678" -v "${VOL}:/home/node/.n8n" "$IMAGE" >/dev/null
