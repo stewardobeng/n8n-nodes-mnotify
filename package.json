@@ -1,0 +1,59 @@
+{
+	"name": "n8n-nodes-mnotify",
+	"version": "0.1.0",
+	"description": "mNotify (BMS) node for n8n: SMS, scheduled SMS, bulk voice, IVR, templates, groups, contacts, sender IDs and delivery reports",
+	"license": "MIT",
+	"homepage": "https://github.com/steprotech/n8n-nodes-mnotify",
+	"keywords": [
+		"n8n-community-node-package",
+		"n8n",
+		"mnotify",
+		"bms",
+		"sms",
+		"bulk-sms",
+		"voice",
+		"ivr",
+		"ussd",
+		"ghana"
+	],
+	"author": {
+		"name": "Steward Obeng",
+		"email": "stewardobeng@gmail.com"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/steprotech/n8n-nodes-mnotify.git"
+	},
+	"scripts": {
+		"build": "n8n-node build",
+		"build:watch": "tsc --watch",
+		"dev": "n8n-node dev",
+		"lint": "n8n-node lint",
+		"lint:fix": "n8n-node lint --fix",
+		"test": "node --test test/",
+		"prepublishOnly": "n8n-node prerelease"
+	},
+	"files": [
+		"dist"
+	],
+	"n8n": {
+		"n8nNodesApiVersion": 1,
+		"strict": true,
+		"credentials": [
+			"dist/credentials/MNotifyApi.credentials.js"
+		],
+		"nodes": [
+			"dist/nodes/MNotify/MNotify.node.js",
+			"dist/nodes/MNotifyTrigger/MNotifyTrigger.node.js"
+		]
+	},
+	"devDependencies": {
+		"@n8n/node-cli": "0.51.4",
+		"eslint": "9.39.4",
+		"prettier": "3.8.3",
+		"typescript": "5.9.3"
+	},
+	"peerDependencies": {
+		"n8n-workflow": "*"
+	}
+}
