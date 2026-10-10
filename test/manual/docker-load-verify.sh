@@ -21,6 +21,10 @@ NAME="${NAME:-n8n-mnotify-verify}"
 IMAGE="${IMAGE:-n8nio/n8n:latest}"
 PORT="${PORT:-5688}"
 VOL="${VOL:-/tmp/n8n-mnotify-verify}"
+# What to install. Default is the tarball packed from this working tree. Set
+# PKG_SPEC=n8n-nodes-mnotify to install the published package by name straight from the registry,
+# which is exactly what a user of the published node does.
+PKG_SPEC="${PKG_SPEC:-/tmp/pkg.tgz}"
 REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 
 # n8n needs a task broker port that is free; the CLI execute runs in its own container so that it
@@ -68,12 +72,15 @@ docker run -d --name "$NAME" --memory=1200m --memory-swap=1200m "${N8N_ENV[@]}" 
 wait_for_n8n
 
 echo "== 3. install the package the manual way"
+echo "    installing: ${PKG_SPEC}"
 # --legacy-peer-deps: the package declares n8n-workflow as a peer, like every published community
 # node does. A plain npm install would try to fetch n8n-workflow from the registry and, in this
 # image, fail building its native isolated-vm dependency. n8n supplies n8n-workflow at runtime.
-docker cp "$TARBALL" "${NAME}:/tmp/pkg.tgz" >/dev/null
+if [ "${PKG_SPEC}" = "/tmp/pkg.tgz" ]; then
+	docker cp "$TARBALL" "${NAME}:/tmp/pkg.tgz" >/dev/null
+fi
 docker exec "$NAME" sh -lc \
-	'mkdir -p /home/node/.n8n/nodes && cd /home/node/.n8n/nodes && npm install --no-audit --no-fund --legacy-peer-deps /tmp/pkg.tgz 2>&1 | tail -2'
+	"mkdir -p /home/node/.n8n/nodes && cd /home/node/.n8n/nodes && npm install --no-audit --no-fund --legacy-peer-deps ${PKG_SPEC} 2>&1 | tail -2"
 docker restart "$NAME" >/dev/null
 wait_for_n8n
 
