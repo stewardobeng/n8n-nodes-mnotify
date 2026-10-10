@@ -7,6 +7,7 @@ import {
 	requireMNotifyDateTime,
 	resolveSenderId,
 } from '../GenericFunctions';
+import { mnPath } from '../endpoints';
 
 const showOnlyForScheduled = { resource: ['scheduled'] };
 
@@ -103,7 +104,7 @@ export async function executeScheduledOperation(
 ): Promise<IDataObject[]> {
 	switch (operation) {
 		case 'getAll': {
-			const response = await mnotifyApiRequest.call(this, 'GET', 'scheduled');
+			const response = await mnotifyApiRequest.call(this, 'GET', mnPath('scheduled'));
 			return emitRecords(response, ['summary', 'scheduled_list', 'data']);
 		}
 		case 'update': {
@@ -131,7 +132,7 @@ export async function executeScheduledOperation(
 			const response = await mnotifyApiRequest.call(
 				this,
 				'PUT',
-				`scheduled/${encodeURIComponent(scheduledId)}`,
+				mnPath('scheduledById', { id: scheduledId }),
 				{ body },
 			);
 			const summary = (response.summary ?? {}) as IDataObject;

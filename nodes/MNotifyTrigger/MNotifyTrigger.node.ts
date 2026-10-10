@@ -1,5 +1,6 @@
 import type {
 	IDataObject,
+	IHookFunctions,
 	INodeExecutionData,
 	INodeType,
 	INodeTypeDescription,
@@ -49,6 +50,7 @@ export class MNotifyTrigger implements INodeType {
 		icon: { light: 'file:mnotify.svg', dark: 'file:mnotify.dark.svg' },
 		group: ['trigger'],
 		version: 1,
+		subtitle: '={{ $parameter["callbackType"] }}',
 		description: 'Start a workflow when mNotify sends a USSD session or IVR callback',
 		defaults: {
 			name: 'mNotify Trigger',
@@ -91,12 +93,12 @@ export class MNotifyTrigger implements INodeType {
 					{
 						name: 'GET',
 						value: 'GET',
-						description: 'mNotify calls IVR callbacks with GET and query parameters',
+						description: 'MNotify calls IVR callbacks with GET and query parameters',
 					},
 					{
 						name: 'POST',
 						value: 'POST',
-						description: 'mNotify posts USSD sessions as a JSON body',
+						description: 'MNotify posts USSD sessions as a JSON body',
 					},
 				],
 				default: 'POST',
@@ -124,6 +126,26 @@ export class MNotifyTrigger implements INodeType {
 				default: '',
 			},
 		],
+	};
+
+	/**
+	 * mNotify has no API to register or remove a callback URL: the URL is entered by hand in
+	 * the mNotify dashboard (or requested from mNotify support for a USSD application), so
+	 * there is nothing to create or tear down on activation. The hooks answer truthfully
+	 * instead of pretending a registration happened.
+	 */
+	webhookMethods = {
+		default: {
+			async checkExists(this: IHookFunctions): Promise<boolean> {
+				return true;
+			},
+			async create(this: IHookFunctions): Promise<boolean> {
+				return true;
+			},
+			async delete(this: IHookFunctions): Promise<boolean> {
+				return true;
+			},
+		},
 	};
 
 	async webhook(this: IWebhookFunctions): Promise<IWebhookResponseData> {

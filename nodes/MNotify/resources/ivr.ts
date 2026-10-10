@@ -2,6 +2,7 @@ import type { IDataObject, IExecuteFunctions, INodeProperties } from 'n8n-workfl
 import { NodeOperationError } from 'n8n-workflow';
 
 import { emitRecords, mnotifyApiRequest, splitRecipients, withoutEmptyValues } from '../GenericFunctions';
+import { mnPath } from '../endpoints';
 
 const showOnlyForIvr = { resource: ['ivr'] };
 
@@ -26,6 +27,12 @@ export const ivrDescription: INodeProperties[] = [
 				value: 'deleteScenario',
 				action: 'Delete an IVR scenario',
 				description: 'Remove an outbound IVR scenario',
+			},
+			{
+				name: 'Delete Scenario Flow',
+				value: 'deleteFlow',
+				action: 'Delete an IVR scenario flow',
+				description: 'Remove one step from a scenario',
 			},
 			{
 				name: 'Get Many Scenarios',
@@ -68,12 +75,6 @@ export const ivrDescription: INodeProperties[] = [
 				value: 'updateScenario',
 				action: 'Update an IVR scenario',
 				description: 'Change the title, description or enabled state of a scenario',
-			},
-			{
-				name: 'Delete Scenario Flow',
-				value: 'deleteFlow',
-				action: 'Delete an IVR scenario flow',
-				description: 'Remove one step from a scenario',
 			},
 		],
 		default: 'getScenarios',
@@ -237,11 +238,10 @@ export const ivrDescription: INodeProperties[] = [
 				operation: ['saveFlow'],
 			},
 		},
-		description:
-			'Leave empty to add a new step to the scenario, or enter an existing flow ID to replace that step.',
+		description: 'Leave empty to add a new step to the scenario, or enter an existing flow ID to replace that step',
 	},
 	{
-		displayName: 'Scenario',
+		displayName: 'Scenario Name or ID',
 		name: 'ivrFlowScenarioId',
 		type: 'options',
 		typeOptions: {
@@ -254,8 +254,7 @@ export const ivrDescription: INodeProperties[] = [
 				operation: ['saveFlow'],
 			},
 		},
-		description:
-			'Scenario the step belongs to (sent as ivr_scenarios_id when adding a new step).',
+		description: 'Scenario the step belongs to (sent as ivr_scenarios_id when adding a new step). Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
 	},
 	{
 		displayName: 'Flow Name',
@@ -343,7 +342,7 @@ export async function executeIvrOperation(
 ): Promise<IDataObject[]> {
 	switch (operation) {
 		case 'getScenarios': {
-			const response = await mnotifyApiRequest.call(this, 'GET', 'ivr-scenarios');
+			const response = await mnotifyApiRequest.call(this, 'GET', mnPath('ivrScenarios'));
 			return emitRecords(response, ['data', 'scenario_list', 'ivr_scenarios', 'scenarios']);
 		}
 		case 'getScenario': {
@@ -351,7 +350,7 @@ export async function executeIvrOperation(
 			const response = await mnotifyApiRequest.call(
 				this,
 				'GET',
-				`ivr-scenarios/${encodeURIComponent(scenarioId)}`,
+				mnPath('ivrScenarioById', { id: scenarioId }),
 			);
 			return emitRecords(response, ['scenario_list', 'scenario', 'data']);
 		}
@@ -364,7 +363,7 @@ export async function executeIvrOperation(
 			if (!body.title) {
 				throw new NodeOperationError(this.getNode(), 'The scenario title is empty.', { itemIndex });
 			}
-			const response = await mnotifyApiRequest.call(this, 'POST', 'ivr-scenarios', { body });
+			const response = await mnotifyApiRequest.call(this, 'POST', mnPath('ivrScenarios'), { body });
 			return [
 				{
 					scenarioId: response.id ?? response._id ?? '',
@@ -385,7 +384,7 @@ export async function executeIvrOperation(
 			const response = await mnotifyApiRequest.call(
 				this,
 				'PUT',
-				`ivr-scenarios/${encodeURIComponent(scenarioId)}`,
+				mnPath('ivrScenarioById', { id: scenarioId }),
 				{ body },
 			);
 			return [{ scenarioId, status: response.status ?? '', message: response.message ?? '' }];
@@ -395,7 +394,7 @@ export async function executeIvrOperation(
 			const response = await mnotifyApiRequest.call(
 				this,
 				'DELETE',
-				`ivr-scenarios/${encodeURIComponent(scenarioId)}`,
+				mnPath('ivrScenarioById', { id: scenarioId }),
 			);
 			return [{ scenarioId, status: response.status ?? '', message: response.message ?? '' }];
 		}
@@ -405,13 +404,13 @@ export async function executeIvrOperation(
 			if (recipients.length === 0) {
 				throw new NodeOperationError(this.getNode(), 'No destination number given.', { itemIndex });
 			}
-			const response = await mnotifyApiRequest.call(this, 'POST', 'ivr-scenarios/send', {
+			const response = await mnotifyApiRequest.call(this, 'POST', mnPath('ivrScenarioSend'), {
 				body: { id: scenarioId, recipients },
 			});
 			return emitRecords(response, ['summary', 'data']);
 		}
 		case 'initiateCall': {
-			const response = await mnotifyApiRequest.call(this, 'POST', 'initiate-ivr-call', {
+			const response = await mnotifyApiRequest.call(this, 'POST', mnPath('initiateIvrCall'), {
 				body: {
 					fromNumber: this.getNodeParameter('ivrFromNumber', itemIndex, '') as string,
 					toNumber: this.getNodeParameter('ivrToNumber', itemIndex, '') as string,
@@ -432,7 +431,7 @@ export async function executeIvrOperation(
 			const response = await mnotifyApiRequest.call(
 				this,
 				'GET',
-				`ivr-scenarios/flow/${encodeURIComponent(flowId)}`,
+				mnPath('ivrScenariosFlowById', { id: flowId }),
 			);
 			return emitRecords(response, ['data', 'flow']);
 		}
@@ -470,7 +469,7 @@ export async function executeIvrOperation(
 			const response = await mnotifyApiRequest.call(
 				this,
 				isUpdate ? 'PUT' : 'POST',
-				isUpdate ? `ivr-scenarios/flow/${encodeURIComponent(flowId)}` : 'ivr-scenarios/flow',
+				isUpdate ? mnPath('ivrScenariosFlowById', { id: flowId }) : mnPath('ivrScenariosFlow'),
 				{ body },
 			);
 			return [
@@ -486,7 +485,7 @@ export async function executeIvrOperation(
 			const response = await mnotifyApiRequest.call(
 				this,
 				'DELETE',
-				`ivr-scenarios/flow/${encodeURIComponent(flowId)}`,
+				mnPath('ivrScenariosFlowById', { id: flowId }),
 			);
 			return [{ flowId, status: response.status ?? '', message: response.message ?? '' }];
 		}

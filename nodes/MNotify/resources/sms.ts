@@ -7,6 +7,7 @@ import {
 	resolveSenderId,
 	splitRecipients,
 } from '../GenericFunctions';
+import { mnPath } from '../endpoints';
 
 const showOnlyForSms = { resource: ['sms'] };
 
@@ -108,7 +109,7 @@ export const smsDescription: INodeProperties[] = [
 			'One or more destination numbers, separated by commas, spaces or new lines. Local (0241234567) and international (233241234567 or +233241234567) formats are accepted. Each number is charged.',
 	},
 	{
-		displayName: 'Groups',
+		displayName: 'Group Names or IDs',
 		name: 'groupIds',
 		type: 'multiOptions',
 		typeOptions: {
@@ -188,7 +189,7 @@ export const smsDescription: INodeProperties[] = [
 			'Message body. Anything longer than 160 characters is split into several parts and charged per part.',
 	},
 	{
-		displayName: 'Message Template',
+		displayName: 'Message Template Name or ID',
 		name: 'messageId',
 		type: 'options',
 		typeOptions: {
@@ -257,7 +258,7 @@ async function sendSms(this: IExecuteFunctions, itemIndex: number): Promise<IDat
 		body.sms_type = 'otp';
 	}
 
-	const response = await mnotifyApiRequest.call(this, 'POST', 'sms/quick', { body });
+	const response = await mnotifyApiRequest.call(this, 'POST', mnPath('smsQuick'), { body });
 	return [buildSendResult(response, sender)];
 }
 
@@ -302,7 +303,7 @@ async function sendSmsToGroups(this: IExecuteFunctions, itemIndex: number): Prom
 		? requireMNotifyDateTime.call(this, additionalFields.scheduleDate, 'Schedule Date and Time')
 		: '';
 
-	const response = await mnotifyApiRequest.call(this, 'POST', 'sms/group', { body });
+	const response = await mnotifyApiRequest.call(this, 'POST', mnPath('smsGroup'), { body });
 	return [buildSendResult(response, sender)];
 }
 

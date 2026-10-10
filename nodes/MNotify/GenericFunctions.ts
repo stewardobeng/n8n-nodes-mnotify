@@ -39,8 +39,6 @@ export interface MNotifyRequestOptions {
 	qs?: IDataObject;
 	/** Pre-built multipart body (voice call uploads) with the matching Content-Type header. */
 	multipart?: { body: Buffer; contentType: string };
-	/** True for endpoints that answer with a bare list, where `status` may be absent. */
-	allowMissingStatus?: boolean;
 }
 
 /** Extracts the most useful message out of whatever n8n hands us as an error. */
@@ -151,20 +149,97 @@ export async function mnotifyApiRequest(
 	const data = response as IDataObject;
 	const status = String(data.status ?? '').toLowerCase();
 	const code = String(data.code ?? '').trim();
+	const hasErrorField = data.error !== undefined && String(data.error).trim() !== '';
 
-	if (status === 'success' && (code === '' || code === '2000')) {
-		return data;
-	}
+	// A successful mNotify response carries status "success" and, when it carries a code at all,
+	// code "2000". The check is deliberately written as "is anything wrong" rather than "is
+	// everything present": the IVR scenarios endpoint answers HTTP 201 with no status field at
+	// all, and the balance endpoints answer with no code, while every failure observed either
+	// uses a non-2xx HTTP status, a status other than success, a non-2000 code, or an error
+	// field. HTTP failures never reach this point - n8n throws for them above.
+	const wrongStatus = status !== '' && status !== 'success';
+	const wrongCode = code !== '' && code !== '2000';
 
-	if (status === '' && !data.error && options.allowMissingStatus) {
+	if (!hasErrorField && !wrongStatus && !wrongCode) {
 		return data;
 	}
 
 	const apiMessage = String(data.message ?? data.error ?? '').trim();
-	const label = apiMessage !== '' ? apiMessage : `mNotify refused the request (code ${code || 'unknown'})`;
+	const label =
+		apiMessage !== '' ? apiMessage : `mNotify refused the request (code ${code || 'unknown'})`;
 	throw new NodeOperationError(this.getNode(), `mNotify error: ${label}`, {
 		description: hintFor(apiMessage, undefined),
 	});
+}
+
+/** The largest page size mNotify accepted when probed; used as the ceiling for page requests. */
+const MAX_PAGE_SIZE = 1000;
+
+/** Safety stop for Return All so a pagination bug cannot loop forever. */
+const MAX_PAGES = 50;
+
+export interface PaginationChoice {
+	/** Fetch every page until mNotify says there are no more. */
+	returnAll: boolean;
+	/** How many records to return when Return All is off. */
+	limit: number;
+}
+
+/**
+ * Reads a paginated mNotify collection.
+ *
+ * Contacts and delivery reports are paginated (`per_page` defaults to 10, and the response
+ * carries a `pagination` object with `last_page`); groups and templates are not. When
+ * Return All is on, pages are followed until `last_page` or the safety cap; otherwise the first
+ * page is requested at the requested size.
+ */
+export async function fetchPaginated(
+	this: MNotifyApiContext,
+	endpoint: string,
+	baseQs: IDataObject,
+	listKeys: string[],
+	choice: PaginationChoice,
+): Promise<IDataObject[]> {
+	const collected: IDataObject[] = [];
+	const pageSize = choice.returnAll
+		? MAX_PAGE_SIZE
+		: Math.min(Math.max(Math.trunc(choice.limit) || 10, 1), MAX_PAGE_SIZE);
+
+	for (let page = 1; page <= MAX_PAGES; page++) {
+		const response = await mnotifyApiRequest.call(this, 'GET', endpoint, {
+			qs: { ...baseQs, page, per_page: pageSize },
+		});
+		const records = pickList(response, listKeys);
+		collected.push(...records);
+
+		const pagination = (response.pagination ?? {}) as IDataObject;
+		const lastPage = Number(pagination.last_page ?? page);
+		const noMorePages = records.length === 0 || !Number.isFinite(lastPage) || page >= lastPage;
+
+		if (!choice.returnAll || noMorePages) {
+			break;
+		}
+	}
+
+	return choice.returnAll ? collected : collected.slice(0, pageSize);
+}
+
+/**
+ * For the single-record status endpoints: when mNotify answers that it has no report, return one
+ * explanatory item instead of nothing, so a workflow never ends up silently empty.
+ */
+export function reportItemsOrReason(response: IDataObject, listKeys: string[]): IDataObject[] {
+	const records = emitRecords(response, listKeys);
+	if (records.length > 0) {
+		return records;
+	}
+	return [
+		{
+			found: false,
+			status: response.status ?? '',
+			message: response.message ?? 'mNotify returned no report for this lookup.',
+		},
+	];
 }
 
 /** Splits a user-typed recipient list on commas, semicolons, spaces and new lines. */

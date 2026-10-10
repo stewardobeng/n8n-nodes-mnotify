@@ -1,7 +1,9 @@
 import type { IDataObject, IExecuteFunctions, INodeProperties } from 'n8n-workflow';
 import { NodeOperationError } from 'n8n-workflow';
 
-import { emitRecords, mnotifyApiRequest, withoutEmptyValues } from '../GenericFunctions';
+import type { PaginationChoice } from '../GenericFunctions';
+import { emitRecords, fetchPaginated, mnotifyApiRequest, withoutEmptyValues } from '../GenericFunctions';
+import { mnPath } from '../endpoints';
 
 const showOnlyForContacts = { resource: ['contact'] };
 
@@ -154,7 +156,7 @@ export const contactDescription: INodeProperties[] = [
 		description: 'ID of the contact',
 	},
 	{
-		displayName: 'Group',
+		displayName: 'Group Name or ID',
 		name: 'contactGroupId',
 		type: 'options',
 		typeOptions: {
@@ -172,7 +174,7 @@ export const contactDescription: INodeProperties[] = [
 			'Group to read from or add the contact to. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
 	},
 	{
-		displayName: 'Group',
+		displayName: 'Group Name or ID',
 		name: 'contactUpdateGroupId',
 		type: 'options',
 		typeOptions: {
@@ -185,8 +187,38 @@ export const contactDescription: INodeProperties[] = [
 				operation: ['update'],
 			},
 		},
+		description: 'Group the contact should belong to. mNotify expects the group with every update, so pick it explicitly when moving a contact. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
+	},
+	{
+		displayName: 'Return All',
+		name: 'contactReturnAll',
+		type: 'boolean',
+		default: false,
+		displayOptions: {
+			show: {
+				resource: ['contact'],
+				operation: ['getAll', 'getByGroup'],
+			},
+		},
 		description:
-			'Group the contact should belong to. mNotify expects the group with every update, so pick it explicitly when moving a contact.',
+			'Whether to follow every page mNotify reports. Contacts are paginated (10 per page by default), so a single page misses the rest of the list.',
+	},
+	{
+		displayName: 'Limit',
+		name: 'contactLimit',
+		type: 'number',
+		typeOptions: {
+			minValue: 1,
+		},
+		default: 50,
+		displayOptions: {
+			show: {
+				resource: ['contact'],
+				operation: ['getAll', 'getByGroup'],
+				contactReturnAll: [false],
+			},
+		},
+		description: 'Max number of contacts to return',
 	},
 	...contactDetailFields,
 ];
@@ -202,6 +234,14 @@ function contactBody(this: IExecuteFunctions, itemIndex: number): IDataObject {
 	});
 }
 
+/** Reads the Return All / Limit pair for a paginated contact read. */
+function readPaginationChoice(this: IExecuteFunctions, itemIndex: number): PaginationChoice {
+	return {
+		returnAll: this.getNodeParameter('contactReturnAll', itemIndex, false) as boolean,
+		limit: this.getNodeParameter('contactLimit', itemIndex, 50) as number,
+	};
+}
+
 export async function executeContactOperation(
 	this: IExecuteFunctions,
 	operation: string,
@@ -209,24 +249,30 @@ export async function executeContactOperation(
 ): Promise<IDataObject[]> {
 	switch (operation) {
 		case 'getAll': {
-			const response = await mnotifyApiRequest.call(this, 'GET', 'contact');
-			return emitRecords(response, ['contacts_list', 'contact_list', 'data']);
+			return fetchPaginated.call(
+				this,
+				mnPath('contact'),
+				{},
+				['contacts_list', 'contact_list', 'data'],
+				readPaginationChoice.call(this, itemIndex),
+			);
 		}
 		case 'getByGroup': {
 			const contactGroupId = this.getNodeParameter('contactGroupId', itemIndex, '') as string;
-			const response = await mnotifyApiRequest.call(
+			return fetchPaginated.call(
 				this,
-				'GET',
-				`contact/group/${encodeURIComponent(contactGroupId)}`,
+				mnPath('contactByGroup', { groupId: contactGroupId }),
+				{},
+				['contacts_list', 'contact_list', 'contact', 'data'],
+				readPaginationChoice.call(this, itemIndex),
 			);
-			return emitRecords(response, ['contact_list', 'contacts_list', 'contact', 'data']);
 		}
 		case 'get': {
 			const contactId = this.getNodeParameter('contactId', itemIndex, '') as string;
 			const response = await mnotifyApiRequest.call(
 				this,
 				'GET',
-				`contact/${encodeURIComponent(contactId)}`,
+				mnPath('contactById', { id: contactId }),
 			);
 			return emitRecords(response, ['contact', 'contact_list', 'data']);
 		}
@@ -241,7 +287,7 @@ export async function executeContactOperation(
 			const response = await mnotifyApiRequest.call(
 				this,
 				'POST',
-				`contact/${encodeURIComponent(contactGroupId)}`,
+				mnPath('contactByGroup', { groupId: contactGroupId }),
 				{ body },
 			);
 			const created = (response.contact ?? {}) as IDataObject;
@@ -272,7 +318,7 @@ export async function executeContactOperation(
 			const response = await mnotifyApiRequest.call(
 				this,
 				'PUT',
-				`contact/${encodeURIComponent(contactId)}`,
+				mnPath('contactById', { id: contactId }),
 				{ body },
 			);
 			return [{ contactId, status: response.status ?? '', message: response.message ?? '' }];
@@ -284,7 +330,7 @@ export async function executeContactOperation(
 			const response = await mnotifyApiRequest.call(
 				this,
 				'DELETE',
-				`contact/${encodeURIComponent(contactId)}`,
+				mnPath('contactById', { id: contactId }),
 			);
 			return [{ contactId, status: response.status ?? '', message: response.message ?? '' }];
 		}

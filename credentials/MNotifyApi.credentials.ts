@@ -19,6 +19,8 @@ export class MNotifyApi implements ICredentialType {
 
 	displayName = 'mNotify API';
 
+	icon = { light: 'file:mnotify.svg', dark: 'file:mnotify.dark.svg' } as const;
+
 	documentationUrl = 'https://developer.bms.africa/';
 
 	authenticate: IAuthenticateGeneric = {

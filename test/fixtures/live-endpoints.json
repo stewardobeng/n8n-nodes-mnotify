@@ -1,0 +1,907 @@
+{
+  "probedAt": "2026-10-10T02:44:48.353Z",
+  "apiBase": "https://api.mnotify.com/api/",
+  "method": "HTTP 401 with a JSON invalid-key error means the route exists; an HTML 404 means it does not",
+  "endpoints": {
+    "smsQuick": {
+      "path": "sms/quick",
+      "exists": true,
+      "acceptedMethods": [
+        "POST"
+      ],
+      "methods": {
+        "POST": {
+          "status": 401,
+          "verdict": "exists",
+          "body": "{\"error\":\"invalid api key. please make sure your api key is valid and enabled\"}"
+        },
+        "PUT": {
+          "status": 405,
+          "verdict": "method-not-allowed",
+          "body": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\" /><script type"
+        },
+        "DELETE": {
+          "status": 405,
+          "verdict": "method-not-allowed",
+          "body": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\" /><script type"
+        },
+        "GET": {
+          "status": 405,
+          "verdict": "method-not-allowed",
+          "body": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\" /><script type"
+        }
+      }
+    },
+    "smsGroup": {
+      "path": "sms/group",
+      "exists": true,
+      "acceptedMethods": [
+        "POST"
+      ],
+      "methods": {
+        "GET": {
+          "status": 405,
+          "verdict": "method-not-allowed",
+          "body": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\" /><script type"
+        },
+        "DELETE": {
+          "status": 405,
+          "verdict": "method-not-allowed",
+          "body": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\" /><script type"
+        },
+        "PUT": {
+          "status": 405,
+          "verdict": "method-not-allowed",
+          "body": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\" /><script type"
+        },
+        "POST": {
+          "status": 401,
+          "verdict": "exists",
+          "body": "{\"error\":\"invalid api key. please make sure your api key is valid and enabled\"}"
+        }
+      }
+    },
+    "scheduledById": {
+      "path": "scheduled/:id",
+      "exists": true,
+      "acceptedMethods": [
+        "PUT",
+        "DELETE",
+        "GET"
+      ],
+      "methods": {
+        "PUT": {
+          "status": 401,
+          "verdict": "exists",
+          "body": "{\"error\":\"invalid api key. please make sure your api key is valid and enabled\"}"
+        },
+        "DELETE": {
+          "status": 401,
+          "verdict": "exists",
+          "body": "{\"error\":\"invalid api key. please make sure your api key is valid and enabled\"}"
+        },
+        "GET": {
+          "status": 401,
+          "verdict": "exists",
+          "body": "{\"error\":\"invalid api key. please make sure your api key is valid and enabled\"}"
+        },
+        "POST": {
+          "status": 405,
+          "verdict": "method-not-allowed",
+          "body": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\" /><script type"
+        }
+      }
+    },
+    "voiceQuick": {
+      "path": "voice/quick",
+      "exists": true,
+      "acceptedMethods": [
+        "POST"
+      ],
+      "methods": {
+        "POST": {
+          "status": 401,
+          "verdict": "exists",
+          "body": "{\"error\":\"invalid api key. please make sure your api key is valid and enabled\"}"
+        },
+        "GET": {
+          "status": 405,
+          "verdict": "method-not-allowed",
+          "body": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\" /><script type"
+        },
+        "DELETE": {
+          "status": 405,
+          "verdict": "method-not-allowed",
+          "body": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\" /><script type"
+        },
+        "PUT": {
+          "status": 405,
+          "verdict": "method-not-allowed",
+          "body": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\" /><script type"
+        }
+      }
+    },
+    "scheduled": {
+      "path": "scheduled",
+      "exists": true,
+      "acceptedMethods": [
+        "POST",
+        "GET"
+      ],
+      "methods": {
+        "POST": {
+          "status": 401,
+          "verdict": "exists",
+          "body": "{\"error\":\"invalid api key. please make sure your api key is valid and enabled\"}"
+        },
+        "GET": {
+          "status": 401,
+          "verdict": "exists",
+          "body": "{\"error\":\"invalid api key. please make sure your api key is valid and enabled\"}"
+        },
+        "PUT": {
+          "status": 405,
+          "verdict": "method-not-allowed",
+          "body": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\" /><script type"
+        },
+        "DELETE": {
+          "status": 405,
+          "verdict": "method-not-allowed",
+          "body": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\" /><script type"
+        }
+      }
+    },
+    "voiceGroup": {
+      "path": "voice/group",
+      "exists": true,
+      "acceptedMethods": [
+        "POST"
+      ],
+      "methods": {
+        "POST": {
+          "status": 401,
+          "verdict": "exists",
+          "body": "{\"error\":\"invalid api key. please make sure your api key is valid and enabled\"}"
+        },
+        "GET": {
+          "status": 405,
+          "verdict": "method-not-allowed",
+          "body": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\" /><script type"
+        },
+        "PUT": {
+          "status": 405,
+          "verdict": "method-not-allowed",
+          "body": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\" /><script type"
+        },
+        "DELETE": {
+          "status": 405,
+          "verdict": "method-not-allowed",
+          "body": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\" /><script type"
+        }
+      }
+    },
+    "senderIdRegister": {
+      "path": "senderid/register",
+      "exists": true,
+      "acceptedMethods": [
+        "POST",
+        "GET",
+        "PUT",
+        "DELETE"
+      ],
+      "methods": {
+        "POST": {
+          "status": 401,
+          "verdict": "exists",
+          "body": "{\"error\":\"invalid api key. please make sure your api key is valid and enabled\"}"
+        },
+        "GET": {
+          "status": 401,
+          "verdict": "exists",
+          "body": "{\"error\":\"invalid api key. please make sure your api key is valid and enabled\"}"
+        },
+        "PUT": {
+          "status": 401,
+          "verdict": "exists",
+          "body": "{\"error\":\"invalid api key. please make sure your api key is valid and enabled\"}"
+        },
+        "DELETE": {
+          "status": 401,
+          "verdict": "exists",
+          "body": "{\"error\":\"invalid api key. please make sure your api key is valid and enabled\"}"
+        }
+      }
+    },
+    "senderIdStatus": {
+      "path": "senderid/status/",
+      "exists": true,
+      "acceptedMethods": [
+        "GET",
+        "POST",
+        "PUT",
+        "DELETE"
+      ],
+      "methods": {
+        "GET": {
+          "status": 401,
+          "verdict": "exists",
+          "body": "{\"error\":\"invalid api key. please make sure your api key is valid and enabled\"}"
+        },
+        "POST": {
+          "status": 401,
+          "verdict": "exists",
+          "body": "{\"error\":\"invalid api key. please make sure your api key is valid and enabled\"}"
+        },
+        "PUT": {
+          "status": 401,
+          "verdict": "exists",
+          "body": "{\"error\":\"invalid api key. please make sure your api key is valid and enabled\"}"
+        },
+        "DELETE": {
+          "status": 401,
+          "verdict": "exists",
+          "body": "{\"error\":\"invalid api key. please make sure your api key is valid and enabled\"}"
+        }
+      }
+    },
+    "template": {
+      "path": "template",
+      "exists": true,
+      "acceptedMethods": [
+        "GET",
+        "POST"
+      ],
+      "methods": {
+        "GET": {
+          "status": 401,
+          "verdict": "exists",
+          "body": "{\"error\":\"invalid api key. please make sure your api key is valid and enabled\"}"
+        },
+        "POST": {
+          "status": 401,
+          "verdict": "exists",
+          "body": "{\"error\":\"invalid api key. please make sure your api key is valid and enabled\"}"
+        },
+        "DELETE": {
+          "status": 405,
+          "verdict": "method-not-allowed",
+          "body": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\" /><script type"
+        },
+        "PUT": {
+          "status": 405,
+          "verdict": "method-not-allowed",
+          "body": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\" /><script type"
+        }
+      }
+    },
+    "templateById": {
+      "path": "template/:id",
+      "exists": true,
+      "acceptedMethods": [
+        "GET",
+        "PUT",
+        "DELETE"
+      ],
+      "methods": {
+        "GET": {
+          "status": 401,
+          "verdict": "exists",
+          "body": "{\"error\":\"invalid api key. please make sure your api key is valid and enabled\"}"
+        },
+        "POST": {
+          "status": 405,
+          "verdict": "method-not-allowed",
+          "body": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\" /><script type"
+        },
+        "PUT": {
+          "status": 401,
+          "verdict": "exists",
+          "body": "{\"error\":\"invalid api key. please make sure your api key is valid and enabled\"}"
+        },
+        "DELETE": {
+          "status": 401,
+          "verdict": "exists",
+          "body": "{\"error\":\"invalid api key. please make sure your api key is valid and enabled\"}"
+        }
+      }
+    },
+    "group": {
+      "path": "group",
+      "exists": true,
+      "acceptedMethods": [
+        "GET",
+        "POST"
+      ],
+      "methods": {
+        "GET": {
+          "status": 401,
+          "verdict": "exists",
+          "body": "{\"error\":\"invalid api key. please make sure your api key is valid and enabled\"}"
+        },
+        "POST": {
+          "status": 401,
+          "verdict": "exists",
+          "body": "{\"error\":\"invalid api key. please make sure your api key is valid and enabled\"}"
+        },
+        "DELETE": {
+          "status": 405,
+          "verdict": "method-not-allowed",
+          "body": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\" /><script type"
+        },
+        "PUT": {
+          "status": 405,
+          "verdict": "method-not-allowed",
+          "body": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\" /><script type"
+        }
+      }
+    },
+    "groupById": {
+      "path": "group/:id",
+      "exists": true,
+      "acceptedMethods": [
+        "GET",
+        "PUT",
+        "DELETE"
+      ],
+      "methods": {
+        "GET": {
+          "status": 401,
+          "verdict": "exists",
+          "body": "{\"error\":\"invalid api key. please make sure your api key is valid and enabled\"}"
+        },
+        "PUT": {
+          "status": 401,
+          "verdict": "exists",
+          "body": "{\"error\":\"invalid api key. please make sure your api key is valid and enabled\"}"
+        },
+        "DELETE": {
+          "status": 401,
+          "verdict": "exists",
+          "body": "{\"error\":\"invalid api key. please make sure your api key is valid and enabled\"}"
+        },
+        "POST": {
+          "status": 405,
+          "verdict": "method-not-allowed",
+          "body": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\" /><script type"
+        }
+      }
+    },
+    "contact": {
+      "path": "contact",
+      "exists": true,
+      "acceptedMethods": [
+        "GET",
+        "POST"
+      ],
+      "methods": {
+        "GET": {
+          "status": 401,
+          "verdict": "exists",
+          "body": "{\"error\":\"invalid api key. please make sure your api key is valid and enabled\"}"
+        },
+        "POST": {
+          "status": 401,
+          "verdict": "exists",
+          "body": "{\"error\":\"invalid api key. please make sure your api key is valid and enabled\"}"
+        },
+        "PUT": {
+          "status": 405,
+          "verdict": "method-not-allowed",
+          "body": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\" /><script type"
+        },
+        "DELETE": {
+          "status": 405,
+          "verdict": "method-not-allowed",
+          "body": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\" /><script type"
+        }
+      }
+    },
+    "contactById": {
+      "path": "contact/:id",
+      "exists": true,
+      "acceptedMethods": [
+        "GET",
+        "POST",
+        "PUT",
+        "DELETE"
+      ],
+      "methods": {
+        "GET": {
+          "status": 401,
+          "verdict": "exists",
+          "body": "{\"error\":\"invalid api key. please make sure your api key is valid and enabled\"}"
+        },
+        "POST": {
+          "status": 401,
+          "verdict": "exists",
+          "body": "{\"error\":\"invalid api key. please make sure your api key is valid and enabled\"}"
+        },
+        "PUT": {
+          "status": 401,
+          "verdict": "exists",
+          "body": "{\"error\":\"invalid api key. please make sure your api key is valid and enabled\"}"
+        },
+        "DELETE": {
+          "status": 401,
+          "verdict": "exists",
+          "body": "{\"error\":\"invalid api key. please make sure your api key is valid and enabled\"}"
+        }
+      }
+    },
+    "contactByGroup": {
+      "path": "contact/group/:groupId",
+      "exists": true,
+      "acceptedMethods": [
+        "GET"
+      ],
+      "methods": {
+        "GET": {
+          "status": 401,
+          "verdict": "exists",
+          "body": "{\"error\":\"invalid api key. please make sure your api key is valid and enabled\"}"
+        },
+        "POST": {
+          "status": 405,
+          "verdict": "method-not-allowed",
+          "body": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\" /><script type"
+        },
+        "DELETE": {
+          "status": 405,
+          "verdict": "method-not-allowed",
+          "body": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\" /><script type"
+        },
+        "PUT": {
+          "status": 405,
+          "verdict": "method-not-allowed",
+          "body": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\" /><script type"
+        }
+      }
+    },
+    "balanceSms": {
+      "path": "balance/sms",
+      "exists": true,
+      "acceptedMethods": [
+        "GET"
+      ],
+      "methods": {
+        "GET": {
+          "status": 401,
+          "verdict": "exists",
+          "body": "{\"error\":\"invalid api key. please make sure your api key is valid and enabled\"}"
+        },
+        "DELETE": {
+          "status": 405,
+          "verdict": "method-not-allowed",
+          "body": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\" /><script type"
+        },
+        "PUT": {
+          "status": 405,
+          "verdict": "method-not-allowed",
+          "body": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\" /><script type"
+        },
+        "POST": {
+          "status": 405,
+          "verdict": "method-not-allowed",
+          "body": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\" /><script type"
+        }
+      }
+    },
+    "balanceVoice": {
+      "path": "balance/voice",
+      "exists": true,
+      "acceptedMethods": [
+        "GET"
+      ],
+      "methods": {
+        "GET": {
+          "status": 401,
+          "verdict": "exists",
+          "body": "{\"error\":\"invalid api key. please make sure your api key is valid and enabled\"}"
+        },
+        "PUT": {
+          "status": 405,
+          "verdict": "method-not-allowed",
+          "body": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\" /><script type"
+        },
+        "DELETE": {
+          "status": 405,
+          "verdict": "method-not-allowed",
+          "body": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\" /><script type"
+        },
+        "POST": {
+          "status": 405,
+          "verdict": "method-not-allowed",
+          "body": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\" /><script type"
+        }
+      }
+    },
+    "campaignById": {
+      "path": "campaign/:campaignId",
+      "exists": true,
+      "acceptedMethods": [
+        "GET"
+      ],
+      "methods": {
+        "GET": {
+          "status": 401,
+          "verdict": "exists",
+          "body": "{\"error\":\"invalid api key. please make sure your api key is valid and enabled\"}"
+        },
+        "POST": {
+          "status": 405,
+          "verdict": "method-not-allowed",
+          "body": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\" /><script type"
+        },
+        "PUT": {
+          "status": 405,
+          "verdict": "method-not-allowed",
+          "body": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\" /><script type"
+        },
+        "DELETE": {
+          "status": 405,
+          "verdict": "method-not-allowed",
+          "body": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\" /><script type"
+        }
+      }
+    },
+    "statusById": {
+      "path": "status/:id",
+      "exists": true,
+      "acceptedMethods": [
+        "GET"
+      ],
+      "methods": {
+        "GET": {
+          "status": 401,
+          "verdict": "exists",
+          "body": "{\"error\":\"invalid api key. please make sure your api key is valid and enabled\"}"
+        },
+        "POST": {
+          "status": 405,
+          "verdict": "method-not-allowed",
+          "body": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\" /><script type"
+        },
+        "DELETE": {
+          "status": 405,
+          "verdict": "method-not-allowed",
+          "body": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\" /><script type"
+        },
+        "PUT": {
+          "status": 405,
+          "verdict": "method-not-allowed",
+          "body": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\" /><script type"
+        }
+      }
+    },
+    "report": {
+      "path": "report",
+      "exists": true,
+      "acceptedMethods": [
+        "GET"
+      ],
+      "methods": {
+        "GET": {
+          "status": 401,
+          "verdict": "exists",
+          "body": "{\"error\":\"invalid api key. please make sure your api key is valid and enabled\"}"
+        },
+        "POST": {
+          "status": 405,
+          "verdict": "method-not-allowed",
+          "body": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\" /><script type"
+        },
+        "PUT": {
+          "status": 405,
+          "verdict": "method-not-allowed",
+          "body": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\" /><script type"
+        },
+        "DELETE": {
+          "status": 405,
+          "verdict": "method-not-allowed",
+          "body": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\" /><script type"
+        }
+      }
+    },
+    "reportSummary": {
+      "path": "report/summary",
+      "exists": true,
+      "acceptedMethods": [
+        "POST"
+      ],
+      "methods": {
+        "GET": {
+          "status": 405,
+          "verdict": "method-not-allowed",
+          "body": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\" /><script type"
+        },
+        "POST": {
+          "status": 401,
+          "verdict": "exists",
+          "body": "{\"error\":\"invalid api key. please make sure your api key is valid and enabled\"}"
+        },
+        "PUT": {
+          "status": 405,
+          "verdict": "method-not-allowed",
+          "body": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\" /><script type"
+        },
+        "DELETE": {
+          "status": 405,
+          "verdict": "method-not-allowed",
+          "body": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\" /><script type"
+        }
+      }
+    },
+    "callsById": {
+      "path": "calls/:campaignId",
+      "exists": true,
+      "acceptedMethods": [
+        "GET"
+      ],
+      "methods": {
+        "GET": {
+          "status": 401,
+          "verdict": "exists",
+          "body": "{\"error\":\"invalid api key. please make sure your api key is valid and enabled\"}"
+        },
+        "POST": {
+          "status": 405,
+          "verdict": "method-not-allowed",
+          "body": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\" /><script type"
+        },
+        "PUT": {
+          "status": 405,
+          "verdict": "method-not-allowed",
+          "body": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\" /><script type"
+        },
+        "DELETE": {
+          "status": 405,
+          "verdict": "method-not-allowed",
+          "body": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\" /><script type"
+        }
+      }
+    },
+    "callStatusById": {
+      "path": "call-status/:id",
+      "exists": true,
+      "acceptedMethods": [
+        "GET"
+      ],
+      "methods": {
+        "POST": {
+          "status": 405,
+          "verdict": "method-not-allowed",
+          "body": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\" /><script type"
+        },
+        "DELETE": {
+          "status": 405,
+          "verdict": "method-not-allowed",
+          "body": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\" /><script type"
+        },
+        "GET": {
+          "status": 401,
+          "verdict": "exists",
+          "body": "{\"error\":\"invalid api key. please make sure your api key is valid and enabled\"}"
+        },
+        "PUT": {
+          "status": 405,
+          "verdict": "method-not-allowed",
+          "body": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\" /><script type"
+        }
+      }
+    },
+    "callPeriod": {
+      "path": "call-period",
+      "exists": true,
+      "acceptedMethods": [
+        "GET"
+      ],
+      "methods": {
+        "GET": {
+          "status": 401,
+          "verdict": "exists",
+          "body": "{\"error\":\"invalid api key. please make sure your api key is valid and enabled\"}"
+        },
+        "POST": {
+          "status": 405,
+          "verdict": "method-not-allowed",
+          "body": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\" /><script type"
+        },
+        "PUT": {
+          "status": 405,
+          "verdict": "method-not-allowed",
+          "body": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\" /><script type"
+        },
+        "DELETE": {
+          "status": 405,
+          "verdict": "method-not-allowed",
+          "body": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\" /><script type"
+        }
+      }
+    },
+    "initiateIvrCall": {
+      "path": "initiate-ivr-call",
+      "exists": true,
+      "acceptedMethods": [
+        "POST"
+      ],
+      "methods": {
+        "GET": {
+          "status": 405,
+          "verdict": "method-not-allowed",
+          "body": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\" /><script type"
+        },
+        "PUT": {
+          "status": 405,
+          "verdict": "method-not-allowed",
+          "body": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\" /><script type"
+        },
+        "POST": {
+          "status": 401,
+          "verdict": "exists",
+          "body": "{\"error\":\"invalid api key. please make sure your api key is valid and enabled\"}"
+        },
+        "DELETE": {
+          "status": 405,
+          "verdict": "method-not-allowed",
+          "body": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\" /><script type"
+        }
+      }
+    },
+    "ivrScenarios": {
+      "path": "ivr-scenarios",
+      "exists": true,
+      "acceptedMethods": [
+        "GET",
+        "POST"
+      ],
+      "methods": {
+        "GET": {
+          "status": 401,
+          "verdict": "exists",
+          "body": "{\"error\":\"invalid api key. please make sure your api key is valid and enabled\"}"
+        },
+        "POST": {
+          "status": 401,
+          "verdict": "exists",
+          "body": "{\"error\":\"invalid api key. please make sure your api key is valid and enabled\"}"
+        },
+        "PUT": {
+          "status": 405,
+          "verdict": "method-not-allowed",
+          "body": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\" /><script type"
+        },
+        "DELETE": {
+          "status": 405,
+          "verdict": "method-not-allowed",
+          "body": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\" /><script type"
+        }
+      }
+    },
+    "ivrScenarioById": {
+      "path": "ivr-scenarios/:id",
+      "exists": true,
+      "acceptedMethods": [
+        "GET",
+        "DELETE",
+        "PUT"
+      ],
+      "methods": {
+        "POST": {
+          "status": 405,
+          "verdict": "method-not-allowed",
+          "body": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\" /><script type"
+        },
+        "GET": {
+          "status": 401,
+          "verdict": "exists",
+          "body": "{\"error\":\"invalid api key. please make sure your api key is valid and enabled\"}"
+        },
+        "DELETE": {
+          "status": 401,
+          "verdict": "exists",
+          "body": "{\"error\":\"invalid api key. please make sure your api key is valid and enabled\"}"
+        },
+        "PUT": {
+          "status": 401,
+          "verdict": "exists",
+          "body": "{\"error\":\"invalid api key. please make sure your api key is valid and enabled\"}"
+        }
+      }
+    },
+    "ivrScenarioSend": {
+      "path": "ivr-scenarios/send",
+      "exists": true,
+      "acceptedMethods": [
+        "GET",
+        "POST",
+        "PUT",
+        "DELETE"
+      ],
+      "methods": {
+        "GET": {
+          "status": 401,
+          "verdict": "exists",
+          "body": "{\"error\":\"invalid api key. please make sure your api key is valid and enabled\"}"
+        },
+        "POST": {
+          "status": 401,
+          "verdict": "exists",
+          "body": "{\"error\":\"invalid api key. please make sure your api key is valid and enabled\"}"
+        },
+        "PUT": {
+          "status": 401,
+          "verdict": "exists",
+          "body": "{\"error\":\"invalid api key. please make sure your api key is valid and enabled\"}"
+        },
+        "DELETE": {
+          "status": 401,
+          "verdict": "exists",
+          "body": "{\"error\":\"invalid api key. please make sure your api key is valid and enabled\"}"
+        }
+      }
+    },
+    "ivrScenariosFlow": {
+      "path": "ivr-scenarios/flow",
+      "exists": true,
+      "acceptedMethods": [
+        "GET",
+        "POST",
+        "PUT",
+        "DELETE"
+      ],
+      "methods": {
+        "GET": {
+          "status": 401,
+          "verdict": "exists",
+          "body": "{\"error\":\"invalid api key. please make sure your api key is valid and enabled\"}"
+        },
+        "POST": {
+          "status": 401,
+          "verdict": "exists",
+          "body": "{\"error\":\"invalid api key. please make sure your api key is valid and enabled\"}"
+        },
+        "PUT": {
+          "status": 401,
+          "verdict": "exists",
+          "body": "{\"error\":\"invalid api key. please make sure your api key is valid and enabled\"}"
+        },
+        "DELETE": {
+          "status": 401,
+          "verdict": "exists",
+          "body": "{\"error\":\"invalid api key. please make sure your api key is valid and enabled\"}"
+        }
+      }
+    },
+    "ivrScenariosFlowById": {
+      "path": "ivr-scenarios/flow/:id",
+      "exists": true,
+      "acceptedMethods": [
+        "GET",
+        "PUT",
+        "DELETE"
+      ],
+      "methods": {
+        "GET": {
+          "status": 401,
+          "verdict": "exists",
+          "body": "{\"error\":\"invalid api key. please make sure your api key is valid and enabled\"}"
+        },
+        "POST": {
+          "status": 405,
+          "verdict": "method-not-allowed",
+          "body": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\" /><script type"
+        },
+        "PUT": {
+          "status": 401,
+          "verdict": "exists",
+          "body": "{\"error\":\"invalid api key. please make sure your api key is valid and enabled\"}"
+        },
+        "DELETE": {
+          "status": 401,
+          "verdict": "exists",
+          "body": "{\"error\":\"invalid api key. please make sure your api key is valid and enabled\"}"
+        }
+      }
+    }
+  }
+}

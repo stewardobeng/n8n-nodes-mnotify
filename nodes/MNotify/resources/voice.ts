@@ -8,6 +8,7 @@ import {
 	splitRecipients,
 	toFormBoolean,
 } from '../GenericFunctions';
+import { mnPath } from '../endpoints';
 
 const voiceSourceField: INodeProperties = {
 	displayName: 'Voice Source',
@@ -62,19 +63,19 @@ const voiceIdField: INodeProperties = {
 const voiceSchedulingFields: INodeProperties[] = [
 	{
 		displayName: 'Schedule',
-		name: 'isScheduled',
+		name: 'voiceIsScheduled',
 		type: 'boolean',
 		default: false,
 		description: 'Whether mNotify should hold the call and place it at the given date and time',
 	},
 	{
 		displayName: 'Schedule Date and Time',
-		name: 'scheduleDate',
+		name: 'voiceScheduleDate',
 		type: 'dateTime',
 		default: '',
 		displayOptions: {
 			show: {
-				isScheduled: [true],
+				voiceIsScheduled: [true],
 			},
 		},
 		description:
@@ -143,7 +144,7 @@ export const voiceDescription: INodeProperties[] = [
 			'One or more destination numbers, separated by commas, spaces or new lines. Local (0241234567) and international (233241234567) formats are accepted. Each call is charged.',
 	},
 	{
-		displayName: 'Groups',
+		displayName: 'Group Names or IDs',
 		name: 'groupIds',
 		type: 'multiOptions',
 		typeOptions: {
@@ -241,10 +242,10 @@ async function buildVoiceForm(
 	}
 
 	const additionalFields = this.getNodeParameter('voiceAdditionalFields', itemIndex, {}) as IDataObject;
-	const isScheduled = additionalFields.isScheduled === true;
+	const isScheduled = additionalFields.voiceIsScheduled === true;
 	fields.is_schedule = toFormBoolean(isScheduled);
 	fields.schedule_date = isScheduled
-		? requireMNotifyDateTime.call(this, additionalFields.scheduleDate, 'Schedule Date and Time')
+		? requireMNotifyDateTime.call(this, additionalFields.voiceScheduleDate, 'Schedule Date and Time')
 		: '';
 
 	// No sender field is sent: mNotify's voice endpoints do not document a caller-ID override
@@ -255,13 +256,13 @@ async function buildVoiceForm(
 
 async function sendVoice(this: IExecuteFunctions, itemIndex: number): Promise<IDataObject[]> {
 	const form = await buildVoiceForm.call(this, itemIndex, 'quick');
-	const response = await mnotifyApiRequest.call(this, 'POST', 'voice/quick', { multipart: form });
+	const response = await mnotifyApiRequest.call(this, 'POST', mnPath('voiceQuick'), { multipart: form });
 	return [buildCallResult(response)];
 }
 
 async function sendVoiceToGroups(this: IExecuteFunctions, itemIndex: number): Promise<IDataObject[]> {
 	const form = await buildVoiceForm.call(this, itemIndex, 'group');
-	const response = await mnotifyApiRequest.call(this, 'POST', 'voice/group', { multipart: form });
+	const response = await mnotifyApiRequest.call(this, 'POST', mnPath('voiceGroup'), { multipart: form });
 	return [buildCallResult(response)];
 }
 

@@ -1,15 +1,19 @@
 import type { IDataObject, IExecuteFunctions, INodeProperties } from 'n8n-workflow';
 import { NodeOperationError } from 'n8n-workflow';
 
+import type { PaginationChoice } from '../GenericFunctions';
 import {
 	emitRecords,
 	formatMNotifyDateTime,
+	fetchPaginated,
 	mnotifyApiRequest,
+	reportItemsOrReason,
 	requireMNotifyDate,
 	requireMNotifyDateTime,
 	resolveSenderId,
 	withoutEmptyValues,
 } from '../GenericFunctions';
+import { mnPath } from '../endpoints';
 
 const showOnlyForReports = { resource: ['report'] };
 
@@ -157,7 +161,38 @@ export const reportDescription: INodeProperties[] = [
 			},
 		},
 		description:
-			'ID of a single delivery record. It is not the campaign ID: read it from the Report ID field of a delivery report row.',
+			'The Message ID of a delivery report row (the message_id column), not the campaign ID and not the row ID. mNotify answers "No delivery report found" for an ID it does not hold.',
+	},
+	{
+		displayName: 'Return All',
+		name: 'reportReturnAll',
+		type: 'boolean',
+		default: false,
+		displayOptions: {
+			show: {
+				resource: ['report'],
+				operation: ['getPeriodic', 'getCampaignReport', 'getCallReport'],
+			},
+		},
+		description:
+			'Whether to follow every page mNotify reports. Delivery reports are paginated (10 rows per page by default), so a single page misses most of the period.',
+	},
+	{
+		displayName: 'Limit',
+		name: 'reportLimit',
+		type: 'number',
+		typeOptions: {
+			minValue: 1,
+		},
+		default: 50,
+		displayOptions: {
+			show: {
+				resource: ['report'],
+				operation: ['getPeriodic', 'getCampaignReport', 'getCallReport'],
+				reportReturnAll: [false],
+			},
+		},
+		description: 'Max number of report rows to return',
 	},
 	...dateRangeFields('getPeriodic', 'periodicFrom', 'periodicTo'),
 	{
@@ -258,22 +293,34 @@ export async function executeReportOperation(
 			const status = String(this.getNodeParameter('reportSmsStatus', itemIndex, '') ?? '').trim();
 			// The live API has no /campaign/<id>/<status> route; the status is passed as a query
 			// parameter instead and is simply ignored when empty.
-			const response = await mnotifyApiRequest.call(
+			const rows = await fetchPaginated.call(
 				this,
-				'GET',
-				`campaign/${encodeURIComponent(campaignId)}`,
-				{ qs: withoutEmptyValues({ status }) },
+				mnPath('campaignById', { campaignId }),
+				withoutEmptyValues({ status }),
+				['report', 'data'],
+				readReportPagination.call(this, itemIndex),
 			);
-			return emitRecords(response, ['report', 'data']);
+			return rows.length > 0
+				? rows
+				: [
+						{
+							found: false,
+							campaignId,
+							message: 'mNotify returned no delivery rows for this campaign.',
+						},
+					];
 		}
 		case 'getMessageStatus': {
 			const messageId = this.getNodeParameter('reportMessageId', itemIndex, '') as string;
 			const response = await mnotifyApiRequest.call(
 				this,
 				'GET',
-				`status/${encodeURIComponent(messageId)}`,
+				mnPath('statusById', { id: messageId }),
 			);
-			return emitRecords(response, ['report', 'data']);
+			// This endpoint answers {status: success, message: 'No delivery report found ...',
+			// report: []} for IDs it does not hold, so an empty list is turned into one item
+			// that says so rather than leaving the workflow with no output.
+			return reportItemsOrReason(response, ['report', 'data']);
 		}
 		case 'getPeriodic': {
 			const from = requireMNotifyDate.call(
@@ -286,8 +333,23 @@ export async function executeReportOperation(
 				this.getNodeParameter('periodicTo', itemIndex, ''),
 				'To',
 			);
-			const response = await mnotifyApiRequest.call(this, 'GET', 'report', { qs: { from, to } });
-			return emitRecords(response, ['report', 'data']);
+			const rows = await fetchPaginated.call(
+				this,
+				mnPath('report'),
+				{ from, to },
+				['report', 'data'],
+				readReportPagination.call(this, itemIndex),
+			);
+			return rows.length > 0
+				? rows
+				: [
+						{
+							found: false,
+							from,
+							to,
+							message: 'mNotify has no delivery reports for this period.',
+						},
+					];
 		}
 		case 'getSummary': {
 			const senderId = await resolveSenderId.call(
@@ -304,7 +366,7 @@ export async function executeReportOperation(
 				this.getNodeParameter('summaryTo', itemIndex, ''),
 				'To',
 			);
-			const response = await mnotifyApiRequest.call(this, 'POST', 'report/summary', {
+			const response = await mnotifyApiRequest.call(this, 'POST', mnPath('reportSummary'), {
 				body: {
 					sender_id: senderId,
 					// This endpoint wants seconds, unlike the other mNotify date fields.
@@ -318,22 +380,31 @@ export async function executeReportOperation(
 		case 'getCallReport': {
 			const campaignId = this.getNodeParameter('callCampaignId', itemIndex, '') as string;
 			const status = String(this.getNodeParameter('callStatus', itemIndex, '') ?? '').trim();
-			const response = await mnotifyApiRequest.call(
+			const rows = await fetchPaginated.call(
 				this,
-				'GET',
-				`calls/${encodeURIComponent(campaignId)}`,
-				{ qs: withoutEmptyValues({ status }) },
+				mnPath('callsById', { campaignId }),
+				withoutEmptyValues({ status }),
+				['report', 'call', 'data'],
+				readReportPagination.call(this, itemIndex),
 			);
-			return emitRecords(response, ['report', 'call', 'data']);
+			return rows.length > 0
+				? rows
+				: [
+						{
+							found: false,
+							campaignId,
+							message: 'mNotify returned no call rows for this campaign.',
+						},
+					];
 		}
 		case 'getCallStatus': {
 			const callMessageId = this.getNodeParameter('callMessageId', itemIndex, '') as string;
 			const response = await mnotifyApiRequest.call(
 				this,
 				'GET',
-				`call-status/${encodeURIComponent(callMessageId)}`,
+				mnPath('callStatusById', { id: callMessageId }),
 			);
-			return emitRecords(response, ['call', 'report', 'data']);
+			return reportItemsOrReason(response, ['call', 'report', 'data']);
 		}
 		case 'getCallPeriod': {
 			const from = requireMNotifyDate.call(
@@ -346,16 +417,37 @@ export async function executeReportOperation(
 				this.getNodeParameter('callPeriodTo', itemIndex, ''),
 				'To',
 			);
-			const response = await mnotifyApiRequest.call(this, 'GET', 'call-period', {
-				qs: { from, to },
-			});
-			return emitRecords(response, ['call', 'report', 'data']);
+			const rows = await fetchPaginated.call(
+				this,
+				mnPath('callPeriod'),
+				{ from, to },
+				['call', 'report', 'data'],
+				readReportPagination.call(this, itemIndex),
+			);
+			return rows.length > 0
+				? rows
+				: [
+						{
+							found: false,
+							from,
+							to,
+							message: 'mNotify has no call reports for this period.',
+						},
+					];
 		}
 		default:
 			throw new NodeOperationError(this.getNode(), `Unknown report operation "${operation}".`, {
 				itemIndex,
 			});
 	}
+}
+
+/** Reads the Return All / Limit pair for a paginated report read. */
+function readReportPagination(this: IExecuteFunctions, itemIndex: number): PaginationChoice {
+	return {
+		returnAll: this.getNodeParameter('reportReturnAll', itemIndex, false) as boolean,
+		limit: this.getNodeParameter('reportLimit', itemIndex, 50) as number,
+	};
 }
 
 /** mNotify's summary endpoint wants `YYYY-MM-DD HH:MM:SS`. */

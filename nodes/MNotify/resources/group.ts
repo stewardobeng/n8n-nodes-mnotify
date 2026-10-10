@@ -2,6 +2,7 @@ import type { IDataObject, IExecuteFunctions, INodeProperties } from 'n8n-workfl
 import { NodeOperationError } from 'n8n-workflow';
 
 import { emitRecords, mnotifyApiRequest, withoutEmptyValues } from '../GenericFunctions';
+import { mnPath } from '../endpoints';
 
 const showOnlyForGroups = { resource: ['group'] };
 
@@ -85,12 +86,12 @@ export async function executeGroupOperation(
 ): Promise<IDataObject[]> {
 	switch (operation) {
 		case 'getAll': {
-			const response = await mnotifyApiRequest.call(this, 'GET', 'group');
+			const response = await mnotifyApiRequest.call(this, 'GET', mnPath('group'));
 			return emitRecords(response, ['group_list', 'data']);
 		}
 		case 'get': {
 			const groupId = this.getNodeParameter('groupId', itemIndex, '') as string;
-			const response = await mnotifyApiRequest.call(this, 'GET', `group/${encodeURIComponent(groupId)}`);
+			const response = await mnotifyApiRequest.call(this, 'GET', mnPath('groupById', { id: groupId }));
 			return emitRecords(response, ['group', 'group_list', 'data']);
 		}
 		case 'create': {
@@ -100,7 +101,7 @@ export async function executeGroupOperation(
 			if (!body.group_name) {
 				throw new NodeOperationError(this.getNode(), 'The group name is empty.', { itemIndex });
 			}
-			const response = await mnotifyApiRequest.call(this, 'POST', 'group', { body });
+			const response = await mnotifyApiRequest.call(this, 'POST', mnPath('group'), { body });
 			return [{ groupId: response._id ?? '', groupName: body.group_name, status: response.status ?? '' }];
 		}
 		case 'update': {
@@ -112,7 +113,7 @@ export async function executeGroupOperation(
 			const response = await mnotifyApiRequest.call(
 				this,
 				'PUT',
-				`group/${encodeURIComponent(groupId)}`,
+				mnPath('groupById', { id: groupId }),
 				{ body },
 			);
 			return [{ groupId, status: response.status ?? '', message: response.message ?? '' }];
@@ -122,7 +123,7 @@ export async function executeGroupOperation(
 			const response = await mnotifyApiRequest.call(
 				this,
 				'DELETE',
-				`group/${encodeURIComponent(groupId)}`,
+				mnPath('groupById', { id: groupId }),
 			);
 			return [{ groupId, status: response.status ?? '', message: response.message ?? '' }];
 		}

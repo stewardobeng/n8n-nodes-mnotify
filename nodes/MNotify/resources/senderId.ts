@@ -2,6 +2,7 @@ import type { IDataObject, IExecuteFunctions, INodeProperties } from 'n8n-workfl
 import { NodeOperationError } from 'n8n-workflow';
 
 import { mnotifyApiRequest } from '../GenericFunctions';
+import { mnPath } from '../endpoints';
 
 const showOnlyForSenderIds = { resource: ['senderId'] };
 
@@ -82,7 +83,7 @@ export async function executeSenderIdOperation(
 	switch (operation) {
 		case 'getStatus': {
 			// Trailing slash matters: mNotify answers on /senderid/status/ .
-			const response = await mnotifyApiRequest.call(this, 'POST', 'senderid/status/', {
+			const response = await mnotifyApiRequest.call(this, 'POST', mnPath('senderIdStatus'), {
 				body: { sender_name: senderName },
 			});
 			const summary = (response.summary ?? {}) as IDataObject;
@@ -99,7 +100,7 @@ export async function executeSenderIdOperation(
 		}
 		case 'register': {
 			const purpose = (this.getNodeParameter('senderPurpose', itemIndex, '') as string).trim();
-			const response = await mnotifyApiRequest.call(this, 'POST', 'senderid/register', {
+			const response = await mnotifyApiRequest.call(this, 'POST', mnPath('senderIdRegister'), {
 				body: { sender_name: senderName, purpose },
 			});
 			const summary = (response.summary ?? {}) as IDataObject;

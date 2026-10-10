@@ -2,6 +2,7 @@ import type { IDataObject, IExecuteFunctions, INodeProperties } from 'n8n-workfl
 import { NodeOperationError } from 'n8n-workflow';
 
 import { mnotifyApiRequest } from '../GenericFunctions';
+import { mnPath } from '../endpoints';
 
 const showOnlyForAccount = { resource: ['account'] };
 
@@ -57,7 +58,7 @@ export async function executeAccountOperation(
 ): Promise<IDataObject[]> {
 	switch (operation) {
 		case 'getSmsBalance': {
-			const response = await mnotifyApiRequest.call(this, 'GET', 'balance/sms');
+			const response = await mnotifyApiRequest.call(this, 'GET', mnPath('balanceSms'));
 			return [
 				{
 					balance: toNumber(response.balance),
@@ -68,7 +69,7 @@ export async function executeAccountOperation(
 			];
 		}
 		case 'getVoiceBalance': {
-			const response = await mnotifyApiRequest.call(this, 'GET', 'balance/voice');
+			const response = await mnotifyApiRequest.call(this, 'GET', mnPath('balanceVoice'));
 			return [
 				{
 					balance: toNumber(response.balance),

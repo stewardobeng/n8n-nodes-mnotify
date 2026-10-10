@@ -2,6 +2,7 @@ import type { IDataObject, IExecuteFunctions, INodeProperties } from 'n8n-workfl
 import { NodeOperationError } from 'n8n-workflow';
 
 import { emitRecords, mnotifyApiRequest, withoutEmptyValues } from '../GenericFunctions';
+import { mnPath } from '../endpoints';
 
 const showOnlyForTemplates = { resource: ['template'] };
 
@@ -101,12 +102,12 @@ export async function executeTemplateOperation(
 ): Promise<IDataObject[]> {
 	switch (operation) {
 		case 'getAll': {
-			const response = await mnotifyApiRequest.call(this, 'GET', 'template');
+			const response = await mnotifyApiRequest.call(this, 'GET', mnPath('template'));
 			return emitRecords(response, ['template_list', 'data']);
 		}
 		case 'get': {
 			const templateId = this.getNodeParameter('templateId', itemIndex, '') as string;
-			const response = await mnotifyApiRequest.call(this, 'GET', `template/${encodeURIComponent(templateId)}`);
+			const response = await mnotifyApiRequest.call(this, 'GET', mnPath('templateById', { id: templateId }));
 			return emitRecords(response, ['template_list', 'template', 'data']);
 		}
 		case 'create': {
@@ -117,7 +118,7 @@ export async function executeTemplateOperation(
 			if (!body.body) {
 				throw new NodeOperationError(this.getNode(), 'The template body is empty.', { itemIndex });
 			}
-			const response = await mnotifyApiRequest.call(this, 'POST', 'template', { body });
+			const response = await mnotifyApiRequest.call(this, 'POST', mnPath('template'), { body });
 			return [{ templateId: response._id ?? '', status: response.status ?? '', ...body }];
 		}
 		case 'update': {
@@ -131,7 +132,7 @@ export async function executeTemplateOperation(
 			const response = await mnotifyApiRequest.call(
 				this,
 				'PUT',
-				`template/${encodeURIComponent(templateId)}`,
+				mnPath('templateById', { id: templateId }),
 				{ body },
 			);
 			return [{ templateId, status: response.status ?? '', message: response.message ?? '' }];
@@ -141,7 +142,7 @@ export async function executeTemplateOperation(
 			const response = await mnotifyApiRequest.call(
 				this,
 				'DELETE',
-				`template/${encodeURIComponent(templateId)}`,
+				mnPath('templateById', { id: templateId }),
 			);
 			return [{ templateId, status: response.status ?? '', message: response.message ?? '' }];
 		}
