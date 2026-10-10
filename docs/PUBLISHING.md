@@ -63,6 +63,64 @@ Settings > Community Nodes > Install > enter `n8n-nodes-mnotify` > accept the un
 notice. Details, plus the manual and environment-variable methods, are in
 [docs/INSTALL-OPTIONS.md](INSTALL-OPTIONS.md).
 
+## Do you need a GitHub account? No
+
+Publishing to npm needs only:
+
+- an npm account with a **verified email address**,
+- a token with publish permission (and the 2FA bypass if your account has 2FA enabled for writes),
+- a package name that is free. `n8n-nodes-mnotify` is free.
+
+GitHub is not involved in publishing, and a suspended GitHub account does not block it.
+
+GitHub matters for two optional things:
+
+1. **The `repository` link on the npm page.** `package.json` currently points at
+   `github.com/steprotech/n8n-nodes-mnotify`. That is only a hyperlink; it does not have to resolve.
+   Point it at wherever the code actually lives (your GitLab, say) or drop the field until the repo
+   exists.
+2. **Verification through n8n's Creator Portal**, which since 1 May 2026 requires a package to be
+   published from **GitHub Actions** with a provenance statement. That specific track needs GitHub
+   back.
+
+Worth knowing: npm's own provenance feature supports **GitHub Actions and GitLab CI/CD**, so a
+GitLab pipeline can produce a signed provenance statement for the package. It satisfies npm, but it
+does not satisfy n8n's GitHub-specific verification rule. So the sequence that fits your situation
+is: publish to npm now without GitHub, use the node everywhere, and add the GitHub Actions publish
+workflow later if you decide you want the verified badge.
+
+## Updating after publishing
+
+Yes, you can update it as often as you like, and you should expect to: a first release almost always
+turns up something.
+
+- **A published version is immutable.** You cannot change 0.1.0 once it is up. You publish 0.1.1.
+- **Bump the version, then publish again:**
+
+  ```bash
+  npm version patch --no-git-tag-version   # 0.1.0 -> 0.1.1
+  npm publish                              # runs the guard, then uploads
+  npm view n8n-nodes-mnotify version       # confirm what the registry holds
+  ```
+
+- **How your instances get the update:**
+  - GUI install: Settings > Community Nodes shows an update button for the package.
+  - Manual install: `docker exec -it n8n sh -c "cd ~/.n8n/nodes && npm update n8n-nodes-mnotify"`, then restart n8n.
+  - Environment-variable managed: change the `version` (or the name) in `N8N_COMMUNITY_PACKAGES` and
+    restart; n8n reconciles it on startup.
+- **If a version turns out to be broken:** mark it and ship a fix.
+
+  ```bash
+  npm deprecate n8n-nodes-mnotify@0.1.1 "Broken sender ID handling, use 0.1.2"
+  npm version patch --no-git-tag-version && npm publish
+  ```
+
+  Installs of a deprecated version print the warning; existing users are not deleted or changed.
+- **Unpublishing** is deliberately restricted: within **72 hours** of a publish you can unpublish a
+  version, after that only if it meets npm's criteria (for example, no dependents). Deprecate is
+  usually the better tool. Unpublishing an entire package that people already depend on can also
+  break their installs, which is why npm makes it hard.
+
 ## Version discipline
 
 - Bump the **patch** for fixes that keep workflows working (0.1.1).
