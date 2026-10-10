@@ -5,7 +5,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { createRequire } from 'node:module';
-import { existsSync, readFileSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -282,4 +282,47 @@ test('the credential authenticates with the mNotify query parameter and tests it
 	const apiKey = credentialType.properties.find((property) => property.name === 'apiKey');
 	assert.equal(apiKey.required, true);
 	assert.equal(apiKey.typeOptions.password, true);
+});
+
+test('every icon reference resolves to a shipped, square asset', () => {
+	// n8n resolves 'file:x' next to the compiled file, so an asset that is not copied into dist,
+	// or one renamed without updating the reference, loads as a node with no icon.
+	const folders = [
+		join(root, 'dist', 'nodes', 'MNotify'),
+		join(root, 'dist', 'nodes', 'MNotifyTrigger'),
+		join(root, 'dist', 'credentials'),
+	];
+	const referenced = [];
+
+	for (const folder of folders) {
+		for (const file of readdirSync(folder).filter((name) => name.endsWith('.js'))) {
+			const source = readFileSync(join(folder, file), 'utf8');
+			for (const match of source.matchAll(/file:([A-Za-z0-9_.-]+\.(?:svg|png))/g)) {
+				const asset = join(folder, match[1]);
+				assert.ok(existsSync(asset), `${file} references ${match[1]}, which is not shipped beside it`);
+
+				const bytes = readFileSync(asset);
+				if (match[1].endsWith('.png')) {
+					assert.equal(bytes.subarray(1, 4).toString(), 'PNG', `${match[1]} is not a PNG file`);
+					const width = bytes.readUInt32BE(16);
+					const height = bytes.readUInt32BE(20);
+					assert.equal(width, height, `${match[1]} should be square, found ${width}x${height}`);
+				} else {
+					const markup = bytes.toString('utf8');
+					const viewBox = /\bviewBox="0 0 (\d+) (\d+)"/.exec(markup);
+					assert.ok(viewBox, `${match[1]} has no viewBox`);
+					assert.equal(viewBox[1], viewBox[2], `${match[1]} viewBox is not square: ${viewBox[0]}`);
+					// the brand artwork is a raster carried inside the SVG, so assert it fills the box
+					assert.match(
+						markup,
+						new RegExp(`<image[^>]*width="${viewBox[1]}"[^>]*height="${viewBox[2]}"`),
+						`${match[1]} does not carry a square image matching its viewBox`,
+					);
+				}
+				referenced.push(`${folder.split('/').pop()}/${match[1]}`);
+			}
+		}
+	}
+
+	assert.equal(referenced.length, 6, `expected a light and a dark icon for each of the node, the trigger and the credential, found ${referenced.join(', ')}`);
 });

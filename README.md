@@ -181,6 +181,13 @@ npm run dev        # n8n-node dev, a scratch n8n with this node loaded
 npm test
 ```
 
+## Attribution
+
+This is an unofficial community node. It is not published by, endorsed by, or supported by mNotify or
+Bulk Messaging Solutions. The mNotify and BMS names and marks belong to their owners and are used here
+only to identify the service the node connects to. The bundled icon is the BMS logo as published on
+mnotify.com.
+
 ## License
 
 [MIT](LICENSE)
