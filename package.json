@@ -3,7 +3,7 @@
 	"version": "0.1.1",
 	"description": "mNotify (BMS) node for n8n: SMS, scheduled SMS, bulk voice, IVR, templates, groups, contacts, sender IDs and delivery reports",
 	"license": "MIT",
-	"homepage": "https://github.com/SteProTech/n8n-nodes-mnotify",
+	"homepage": "https://github.com/stewardobeng/n8n-nodes-mnotify",
 	"keywords": [
 		"n8n-community-node-package",
 		"n8n",
@@ -22,7 +22,7 @@
 	},
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/SteProTech/n8n-nodes-mnotify.git"
+		"url": "git+https://github.com/stewardobeng/n8n-nodes-mnotify.git"
 	},
 	"scripts": {
 		"build": "n8n-node build",
@@ -59,6 +59,6 @@
 		"n8n-workflow": "*"
 	},
 	"bugs": {
-		"url": "https://github.com/SteProTech/n8n-nodes-mnotify/issues"
+		"url": "https://github.com/stewardobeng/n8n-nodes-mnotify/issues"
 	}
 }
