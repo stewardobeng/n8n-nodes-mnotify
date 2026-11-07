@@ -76,6 +76,9 @@ never written to logs by this package.
 | **Template** | Create, Delete, Get, Get Many, Update |
 | **Voice** | Send, Send to Group |
 
+Successful delete operations return `{ "deleted": true }`. This replaces the previous
+service-specific response fields; workflows using those fields should be updated.
+
 Three operations are deliberately absent because the live API does not serve them, even though
 the published documentation lists them: `POST /sms/send` as a "quick" alias, the
 `/voice/ivr/scenario...` paths, and `/schedule` as a standalone collection. The equivalents are
@@ -136,7 +139,7 @@ the account's expectation.
 
 **Request encoding.** The voice and IVR endpoints take multipart form bodies (`file`,
 `voice_file`); the JSON endpoints take a JSON body. The node picks the right encoding per
-operation. Voice file fields accept either a local file path or binary data from an earlier node
+operation. Voice file fields accept binary data from an earlier node
 in the workflow, which suits Drive or HTTP download steps.
 
 ## Verification

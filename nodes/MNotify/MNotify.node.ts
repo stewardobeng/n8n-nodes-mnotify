@@ -166,8 +166,12 @@ export class MNotify implements INodeType {
 		for (let itemIndex = 0; itemIndex < items.length; itemIndex++) {
 			try {
 				const results = await runOperation.call(this, itemIndex);
+				const operation = this.getNodeParameter('operation', itemIndex, '') as string;
+				const output = ['delete', 'deleteScenario', 'deleteFlow'].includes(operation)
+					? [{ deleted: true }]
+					: results;
 
-				for (const result of results) {
+				for (const result of output) {
 					returnData.push({
 						json: result,
 						pairedItem: { item: itemIndex },
