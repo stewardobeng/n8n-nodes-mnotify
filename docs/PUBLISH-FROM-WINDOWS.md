@@ -1,3 +1,5 @@
+> **For n8n Creator Portal verification:** do not use local publishing instructions in this historical guide. Use the GitHub Actions process in [PUBLISHING.md](PUBLISHING.md) to publish with provenance.
+
 # Publishing n8n-nodes-mnotify from your Windows machine
 
 This is the route where the npm credential exists only on your computer. Nothing here needs SSH to
