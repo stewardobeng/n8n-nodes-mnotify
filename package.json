@@ -1,6 +1,6 @@
 {
 	"name": "n8n-nodes-mnotify",
-	"version": "0.2.0",
+	"version": "0.3.0-beta.1",
 	"description": "mNotify (BMS) node for n8n: SMS, scheduled SMS, bulk voice, IVR, templates, groups, contacts, sender IDs and delivery reports",
 	"license": "MIT",
 	"homepage": "https://github.com/stewardobeng/n8n-nodes-mnotify",
