@@ -52,6 +52,14 @@ export class MNotifyApi implements ICredentialType {
 				'API key from the mNotify dashboard (app.bms.africa -> Settings -> Developer). Only an enabled key works.',
 		},
 		{
+			displayName: 'Webhook Shared Secret',
+			name: 'webhookSecret',
+			type: 'string',
+			typeOptions: { password: true },
+			default: '',
+			description: 'A unique, randomly generated secret for authenticating trigger callback URLs. Use at least 32 URL-safe characters.',
+		},
+		{
 			displayName: 'Default Sender ID',
 			name: 'senderId',
 			type: 'string',

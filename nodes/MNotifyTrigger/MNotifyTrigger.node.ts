@@ -8,6 +8,7 @@ import type {
 	IWebhookResponseData,
 } from 'n8n-workflow';
 import { NodeConnectionTypes } from 'n8n-workflow';
+import { timingSafeEqual } from 'node:crypto';
 
 /**
  * Receives the callbacks mNotify sends for USSD sessions and IVR calls.
@@ -57,6 +58,7 @@ export class MNotifyTrigger implements INodeType {
 		},
 		inputs: [],
 		outputs: [NodeConnectionTypes.Main],
+		credentials: [{ name: 'mNotifyApi', required: true }],
 		webhooks: [
 			{
 				name: 'default',
@@ -70,7 +72,7 @@ export class MNotifyTrigger implements INodeType {
 		properties: [
 			{
 				displayName:
-					'Copy the Production URL of this node into the callback setting in the mNotify dashboard (USSD application or IVR callback URL). While the workflow is inactive, use the Test URL and press "Listen for test event" here first.',
+					'Add ?mnotify_token=YOUR_SECRET to the webhook URL before registering it with mNotify. Set the same secret in your mNotify API credential. Treat the full URL as a password.',
 				name: 'callbackNotice',
 				type: 'notice',
 				default: '',
@@ -116,7 +118,7 @@ export class MNotifyTrigger implements INodeType {
 				],
 				default: 'any',
 				description:
-					'Which callback this workflow expects. Detection of the actual callback kind is always added to the output as Callback Type.',
+					'Only accept the selected callback shape, or choose Any to accept all shapes. The detected kind is included in the output.',
 			},
 			{
 				displayName:
@@ -151,19 +153,43 @@ export class MNotifyTrigger implements INodeType {
 	async webhook(this: IWebhookFunctions): Promise<IWebhookResponseData> {
 		const body = (this.getBodyData() ?? {}) as IDataObject;
 		const query = (this.getQueryData() ?? {}) as IDataObject;
-		const headers = this.getHeaderData() as unknown as IDataObject;
+		const reject = (status: number, message: string): IWebhookResponseData => {
+			const response = this.getResponseObject();
+			response.writeHead(status, { 'Content-Type': 'text/plain' });
+			response.end(message);
+			return { noWebhookResponse: true };
+		};
+		let secret: unknown;
+		try {
+			secret = (await this.getCredentials('mNotifyApi')).webhookSecret;
+		} catch {
+			return reject(401, 'Unauthorized');
+		}
+		const token = query.mnotify_token;
+		if (typeof secret !== 'string' || !/^[A-Za-z0-9_-]{32,}$/.test(secret) || typeof token !== 'string') {
+			return reject(401, 'Unauthorized');
+		}
+		const expected = Buffer.from(secret, 'utf8');
+		const supplied = Buffer.from(token, 'utf8');
+		if (expected.length !== supplied.length || !timingSafeEqual(expected, supplied)) {
+			return reject(401, 'Unauthorized');
+		}
 
 		// GET callbacks arrive as query parameters, POST callbacks as a JSON body. Both are
 		// merged so a workflow can read one flat object whichever way mNotify called.
-		const payload: IDataObject = { ...query, ...body };
 		const kind = detectKind(body, query);
+		const selected = this.getNodeParameter('callbackType', 'any') as string;
+		if (selected !== 'any' && selected !== kind) {
+			return reject(400, 'Unexpected callback type');
+		}
+		const payload: IDataObject = { ...query, ...body };
+		delete payload.mnotify_token;
 
 		const item: INodeExecutionData = {
 			json: {
 				...payload,
 				callbackType: kind,
 				httpMethod: this.getRequestObject().method,
-				headers,
 			},
 		};
 

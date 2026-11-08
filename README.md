@@ -86,10 +86,33 @@ the published documentation lists them: `POST /sms/send` as a "quick" alias, the
 
 ## Trigger
 
-**mNotify Trigger** receives the callbacks mNotify posts for **USSD** sessions and **IVR**
-events (menu choice, recording, hangup, and so on). It supports both response modes n8n offers:
-immediate acknowledgement, or "respond when the workflow finishes" for USSD flows that must
-return the next menu.
+**mNotify Trigger** receives callbacks for **USSD** sessions and **IVR** events. The workflow's
+last node supplies the response to mNotify. A specific Callback Type rejects other callback shapes;
+choose Any to accept all shapes.
+
+### Secure callback setup
+
+1. Generate a unique random URL-safe secret of at least 32 characters, for example with
+   `node -e "console.log(require('crypto').randomBytes(32).toString('base64url'))"`.
+2. Put it in **Webhook Shared Secret** in the **mNotify API** credential and select that credential
+   in the trigger. This secret is separate from your API key.
+3. Append `?mnotify_token=YOUR_SECRET` to the trigger's Test or Production URL before giving it to
+   mNotify. If the URL already has a query string, use `&mnotify_token=YOUR_SECRET` instead.
+   Never post the full URL publicly. Query secrets can appear in proxy, access and service logs;
+   redact query strings, restrict access to logs, and use HTTPS. Rotate a leaked secret and update
+   the callback URL with mNotify.
+4. Verify with your mNotify integration that it preserves the query string when invoking the
+   callback. The published mNotify documentation does not specify a callback signature or guarantee
+   query-string preservation. This shared token authenticates possession of the URL, not the
+   sender's identity, and does not prevent replay of a captured request.
+
+Requests with a missing, invalid, or too-short secret receive HTTP 401 without running the workflow;
+requests with a nonmatching callback type receive HTTP 400. The token and raw request headers are
+not emitted into the workflow output.
+
+**Migration from 0.2.0:** Existing trigger callbacks will be rejected until the credential has a
+secret and the URL registered with mNotify includes it. Raw `headers` are no longer in trigger output.
+API action nodes continue to use the same credential without requiring a webhook secret.
 
 mNotify has **no API to register or manage callback URLs**. The callback URL to paste into the
 dashboard (or to send to mNotify support for USSD) is shown on the trigger's node, and it must
