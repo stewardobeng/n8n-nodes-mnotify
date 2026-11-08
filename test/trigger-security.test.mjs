@@ -26,7 +26,7 @@ test('valid secret and matching callback execute without leaking the token', asy
 });
 
 test('invalid, missing or weak secrets do not execute the workflow', async () => {
-	for (const options of [{ token: 'wrong' }, { token: null }, { configuredSecret: 'short' }, { credentialError: true }, { token: [secret] }]) {
+	for (const options of [{ token: 'wrong' }, { token: 'x'.repeat(secret.length) }, { token: null }, { configuredSecret: 'short' }, { credentialError: true }, { token: [secret] }]) {
 		const { context, response } = makeContext(options);
 		assert.deepEqual(await new MNotifyTrigger().webhook.call(context), { noWebhookResponse: true });
 		assert.equal(response.status, 401);
